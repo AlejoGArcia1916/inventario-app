@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sistema de Inventario</title>
+        <link rel="stylesheet" href="style.css">
+        <script src="script.js" defer></script>
+    </head>
+    <body>
+        <header>
+            <h1>Sistema de Inventario</h1>
+            <p>Gestión de productos, stock y ventas</p>
+        </header>
+        <div class="app-layout">
+            <nav class="menu-lateral" aria-label="Secciones del sistema">
+                <button type="button" data-ir-vista="dashboard" aria-pressed="true">Dashboard</button>
+                <button type="button" data-ir-vista="inventario" aria-pressed="false">Inventario</button>
+                <button type="button" data-ir-vista="historial" aria-pressed="false">Historial</button>
+                <button type="button" data-ir-vista="reportes" aria-pressed="false">Reportes</button>
+            </nav>
+            <main class="contenedor">
+                <section class="app-vista" data-vista="dashboard">
+                    <section class="resumen">
+                        <h2>Resumen del inventario</h2>
+                        <div id="resumen">
+                            <div class="resumen-tarjeta">
+                                <h3>Total de productos</h3>
+                                <p id="total-productos">0</p>
+                            </div>
+                            <div class="resumen-tarjeta">
+                                <h3>Total de unidades</h3>
+                                <p id="total-unidades">0</p>
+                            </div>
+                            <div class="resumen-tarjeta">
+                                <h3>Productos agotados</h3>
+                                <p id="productos-agotados">0</p>
+                            </div>
+                            <div class="resumen-tarjeta">
+                                <h3>Valor del inventario</h3>
+                                <p id="valor-inventario">US$ 0.00</p>
+                            </div>
+                            <div class="resumen-tarjeta">
+                                <h3>Productos con stock bajo</h3>
+                                <p id="total-stock-bajo">0</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="dashboard-atajos">
+                        <button type="button" data-atajo-vista="inventario">
+                            Ir al inventario
+                        </button>
+                        <button type="button" data-atajo-vista="historial">
+                            Ver historial de ventas
+                        </button>
+                    </div>
+                    <section class="resumen-ventas" aria-labelledby="titulo-ultimas-ventas">
+                        <h3 id="titulo-ultimas-ventas">Últimas ventas</h3>
+                        <ul id="ultimas-ventas"></ul>
+                    </section>
+                </section>
+
+                <section class="app-vista" data-vista="inventario" hidden>
+                    
+                    <section id="agregar-producto" class="agregar-producto">
+                        <h2>Agregar nuevo producto</h2>
+                        <form id="formulario-producto">
+                            <div class="campo">
+                                <label for="nombre-producto">Nombre del producto</label>
+                                <input type="text" id="nombre-producto" placeholder="Ej: Monitor Samsung" required>
+                            </div>
+                            <div class="campo">
+                                <label for="precio-producto">Precio (US$)</label>
+                                <input type="number" id="precio-producto" placeholder="Ej: 250" min="0" step="0.01" required>
+                            </div>
+                            <div class="campo">
+                                <label for="stock-producto">Stock inicial</label>
+                                <input type="number" id="stock-producto" placeholder="Ej: 12" min="0" step="1" required>
+                            </div>
+                            <button type="submit">Agregar producto</button>
+                        </form>
+                    </section>
+                    
+                    <section class="gestion-productos">
+                        <h2>Productos del inventario</h2>
+                        
+                        <div class="buscador">
+                            <label for="buscar-producto">Buscar producto</label>
+                            <input type="text" id="buscar-producto" placeholder="Buscar por nombre...">
+                        </div>
+                        
+                        <div class="filtros">
+                            <button type="button" data-filtro="todos" class="activo">Todos</button>
+                            <button type="button" data-filtro="disponibles">Con stock</button>
+                            <button type="button" data-filtro="agotados">Sin stock</button>
+                            <button type="button" data-filtro="bajo">Stock bajo</button>
+                        </div>
+                        
+                        <div class="ordenamiento">
+                            <label for="ordenar-productos">Ordenar por:</label>
+                            <select id="ordenar-productos">
+                                <option value="original">Orden original</option>
+                                <option value="menor">Menor precio</option>
+                                <option value="mayor">Mayor precio</option>
+                                <option value="nombre">Nombre A-Z</option>
+                            </select>
+                        </div>
+                        
+                        <div class="acciones-inventario">
+                            <button type="button" id="restablecer-inventario">Restablecer inventario</button>
+                        </div>
+                        
+                        <div id="lista-productos" class="lista-productos">
+                            
+                        </div>
+                    </section>
+                </section>
+
+                <section class="app-vista" data-vista="historial" hidden>
+                    
+                    <section class="historial-ventas">
+                        <h2>Historial de ventas</h2>
+                        <div class="contador-ventas">
+                            <p>Operaciones realizadas</p>
+                            <span id="total-operaciones">0</span>
+                        </div>
+                        <div class="buscador-ventas">
+                            <label for="buscar-venta">Buscar en el historial</label>
+                            <input type="text" id="buscar-venta" placeholder="Escribí el nombre del producto...">
+                        </div>
+                        <div class="filtro-fecha">
+                            <label for="fecha-venta">Filtrar ventas por fecha</label>
+                            <input type="date" id="fecha-venta">
+                        </div>
+                        <div class="ordenamiento-ventas">
+                            <button type="button" class="activo" data-orden="recientes">Más recientes</button>
+                            <button type="button" data-orden="antiguas">Más antiguas</button>
+                        </div>
+                        <div class="resumen-dia">
+                            <h3>Vendido en la fecha seleccionada</h3>
+                            <p id="total-dia">Seleccioná una fecha</p>
+                        </div>
+                        <button type="button" id="descargar-ventas">
+                            Descargar ventas (CSV)
+                        </button>
+                        <button type="button" id="descargar-ventas-filtradas">
+                            Descargar resultados
+                        </button>
+                        <div id="lista-ventas">
+                            
+                        </div>
+                        <div class="resumen-ventas">
+                            <h3>Total vendido</h3>
+                            <p id="total-vendido">US$ 0.00</p>
+                        </div>
+                        <div class="acciones-ventas">
+                            <button type="button" id="borrar-historial">Borrar historial de pruebas</button>
+                        </div>
+                    </section>
+                </section>
+
+                <section class="app-vista" data-vista="reportes" hidden>
+                    <section class="ranking-productos">
+                        <h2>🏆 Productos más vendidos</h2>
+                        <div class="filtros-ranking">
+                            <button type="button" class="activo" data-ranking="unidades">
+                                <span aria-hidden="true">📦</span> Unidades vendidas</button>
+                            <button type="button" data-ranking="ingresos">
+                                <span aria-hidden="true">💰</span> Ingresos generados</button>
+                        </div>
+                        <div class="producto-lider">
+                            <h3>🏆 Producto líder en ingresos</h3>
+                            <p id="nombre-producto-lider">Sin ventas registradas</p>
+                            <p id="ingresos-producto-lider">US$ 0.00</p>
+                        </div>
+                        <div id="lista-ranking"></div>
+                    </section>
+                </section>
+            </main>
+        </div>
+        <footer>
+            <p>Sistema de Inventario | Proyecto de aprendizaje</p>
+        </footer>
+    </body>
+</html>
